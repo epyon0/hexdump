@@ -1,6 +1,6 @@
 # hexdump
 Dump file contents
-## help
+## Help
 ```
 ./hexdump -h
 
@@ -11,8 +11,8 @@ OR
 cat <FILE> | ./hexdump -i
 
 [-h || --help]      Print this help message
-[-v || --verbose    Turn on verbose output
-][-b || --bin]       Toggle binary output, default: false
+[-v || --verbose]   Turn on verbose output
+[-b || --bin]       Toggle binary output, default: false
 [-x || --hex]       Toggle hexadecimal output, default: true
 [-o || --oct]       Toggle octal output, default: false
 [-d || --dec]       Toggle decimal output, default: false

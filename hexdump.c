@@ -4,6 +4,13 @@
 #include <stdlib.h>
 #include "./libEpyon/misc.h" // git clone git@github.com:epyon0/libEpyon.git
 
+#ifdef WIN32
+#include <io.h>
+#define F_OK 0
+#define access _access
+#define lX llX
+#endif
+
 #define STDIN       0x20
 #define ASCII       0x10
 #define HEXADECIMAL 0x08
@@ -12,10 +19,11 @@
 #define BINARY      0x01
 
 bool debug = false;
-char dBuff[1024];
+char dBuff[1024*2];
 uint8_t outputFlag = HEXADECIMAL;
 char ascii[255][4];
 unsigned int len = 8;
+char file[1024] = {'\0'};
 
 void dumpFile(char ch, uint64_t pos);
 
@@ -32,16 +40,16 @@ int main(const int argc, const char *argv[]) {
 
             if ((strncmp(arg, "-h", sizeof("-h")) == 0) || (strncmp(arg, "--help", sizeof("--help")) == 0)) {
                 printf("\nDump file contents\n\n%s <FILE>\nOR\ncat <FILE> | %s -i\n\n", argv[0], argv[0]);
-                printf("[-h || --help]      Print this help message\n");
-                printf("[-v || --verbose    Turn on verbose output\n]");
-                printf("[-b || --bin]       Toggle binary output, default: %s\n", ((BINARY & outputFlag) == BINARY) ? "true" : "false");
-                printf("[-x || --hex]       Toggle hexadecimal output, default: %s\n", ((HEXADECIMAL & outputFlag) == HEXADECIMAL) ? "true" : "false");
-                printf("[-o || --oct]       Toggle octal output, default: %s\n", ((OCTAL & outputFlag) == OCTAL) ? "true" : "false");
-                printf("[-d || --dec]       Toggle decimal output, default: %s\n", ((DECIMAL & outputFlag) == DECIMAL) ? "true" : "false");
-                printf("[-a || --ascii]     Toggle ASCII output, default: %s\n", ((ASCII & outputFlag) == ASCII) ? "true" : "false");
-                printf("[-i || --stdin]     Read file from STDIN instead of parameter\n");
-                printf("[-l || --len] <INT> Number of bytes displayed before wrapping to next line, default: %u\n", len);
-                printf("<FILE>              Path to file\n");
+                printf("[-h || --help]        Print this help message\n");
+                printf("[-v || --verbose]     Turn on verbose output\n");
+                printf("[-b || --bin]         Toggle binary output, default: %s\n", ((BINARY & outputFlag) == BINARY) ? "true" : "false");
+                printf("[-x || --hex]         Toggle hexadecimal output, default: %s\n", ((HEXADECIMAL & outputFlag) == HEXADECIMAL) ? "true" : "false");
+                printf("[-o || --oct]         Toggle octal output, default: %s\n", ((OCTAL & outputFlag) == OCTAL) ? "true" : "false");
+                printf("[-d || --dec]         Toggle decimal output, default: %s\n", ((DECIMAL & outputFlag) == DECIMAL) ? "true" : "false");
+                printf("[-a || --ascii]       Toggle ASCII output, default: %s\n", ((ASCII & outputFlag) == ASCII) ? "true" : "false");
+                printf("[-i || --stdin]       Read file from STDIN instead of parameter\n");
+                printf("[-l || --len] <INT>   Number of bytes displayed before wrapping to next line, default: %u\n", len);
+                printf("[-f || --file] <FILE> Path to file\n");
 
                 return 0;
             }
@@ -51,30 +59,35 @@ int main(const int argc, const char *argv[]) {
                 outputFlag ^= BINARY;
                 snprintf(dBuff, sizeof(dBuff), "BINARY Flag: %s", ((BINARY & outputFlag) == BINARY) ? "true" : "false");
                 verbose(dBuff, __FILE__, __LINE__, __FUNCTION__, debug);
+                continue;
             }
             if ((strncmp(arg, "-o", sizeof("-o")) == 0) || (strncmp(arg, "--oct", sizeof("--oct")) == 0)) {
                 verbose("Setting OCTAL Flag", __FILE__, __LINE__, __FUNCTION__, debug);
                 outputFlag ^= OCTAL;
                 snprintf(dBuff, sizeof(dBuff), "OCTAL Flag: %s", ((OCTAL & outputFlag) == OCTAL) ? "true" : "false");
                 verbose(dBuff, __FILE__, __LINE__, __FUNCTION__, debug);
+                continue;
             }
             if ((strncmp(arg, "-d", sizeof("-d")) == 0) || (strncmp(arg, "--dec", sizeof("--dec")) == 0)) {
                 verbose("Setting DECIMAL Flag", __FILE__, __LINE__, __FUNCTION__, debug);
                 outputFlag ^= DECIMAL;
                 snprintf(dBuff, sizeof(dBuff), "DECIMAL Flag: %s", ((DECIMAL & outputFlag) == DECIMAL) ? "true" : "false");
                 verbose(dBuff, __FILE__, __LINE__, __FUNCTION__, debug);
+                continue;
             }
             if ((strncmp(arg, "-x", sizeof("-x")) == 0) || (strncmp(arg, "--hex", sizeof("--hex")) == 0)) {
                 verbose("Setting HEXADECIMAL Flag", __FILE__, __LINE__, __FUNCTION__, debug);
                 outputFlag ^= HEXADECIMAL;
                 snprintf(dBuff, sizeof(dBuff), "HEXADECIMAL Flag: %s", ((HEXADECIMAL & outputFlag) == HEXADECIMAL) ? "true" : "false");
                 verbose(dBuff, __FILE__, __LINE__, __FUNCTION__, debug);
+                continue;
             }
             if ((strncmp(arg, "-a", sizeof("-a")) == 0) || (strncmp(arg, "--ascii", sizeof("--ascii")) == 0)) {
                 verbose("Setting ASCII Flag", __FILE__, __LINE__, __FUNCTION__, debug);
                 outputFlag ^= ASCII;
                 snprintf(dBuff, sizeof(dBuff), "ASCII Flag: %s", ((ASCII & outputFlag) == ASCII) ? "true" : "false");
                 verbose(dBuff, __FILE__, __LINE__, __FUNCTION__, debug);
+                continue;
             }
 
             if ((strncmp(arg, "-i", sizeof("-i")) == 0) || (strncmp(arg, "--stdin", sizeof("--stdin")) == 0)) {
@@ -82,10 +95,21 @@ int main(const int argc, const char *argv[]) {
                 outputFlag ^= STDIN;
                 snprintf(dBuff, sizeof(dBuff), "STDIN Flag: %s", ((STDIN & outputFlag) == STDIN) ? "true" : "false");
                 verbose(dBuff, __FILE__, __LINE__, __FUNCTION__, debug);
+                continue;
             }
 
             if (((strncmp(arg, "-l", sizeof("-l")) == 0) || (strncmp(arg, "--len", sizeof("--len")) == 0)) && (i+1 < argc)) {
                 len = atoi(argv[i+1]);
+                snprintf(dBuff, sizeof(dBuff), "Setting LENGTH: %d", len);
+                verbose(dBuff, __FILE__, __LINE__, __FUNCTION__, debug);
+                i++;
+                continue;
+            }
+
+            if (((strncmp(arg, "-f", sizeof("-f")) == 0) || (strncmp(arg, "--file", sizeof("--file")) == 0)) && (i+1 < argc)) {
+                strncpy(file, argv[i+1], sizeof(file));
+                i++;
+                continue;
             }
         }
     }
@@ -137,13 +161,39 @@ int main(const int argc, const char *argv[]) {
     strncpy(ascii[127], "DEL", 4);
     }
 
+    char ch;
     if ((STDIN & outputFlag) == STDIN) {
-        char ch;
         uint64_t count = 0;
         verbose("Reading from STDIN", __FILE__, __LINE__, __FUNCTION__, debug);
         while(read(STDIN_FILENO, &ch, 1) > 0) {
             dumpFile(ch, count);
             count++;
+        }
+    } else {
+        if (file[0] != '\0') {
+            snprintf(dBuff, sizeof(dBuff), "Reading from FILE: %s", file);
+            verbose(dBuff, __FILE__, __LINE__, __FUNCTION__, debug);
+
+            if (access(file, F_OK) == 0) {
+                FILE *fptr;
+                long flen;
+
+                fptr = fopen(file, "rb");
+                fseek(fptr, 0, SEEK_END);
+                flen = ftell(fptr);
+                rewind(fptr);
+
+                for (int i = 0; i < flen; i++) {
+                    fread(&ch, 1, 1, fptr);
+                    dumpFile(ch, i);
+                }
+
+                fclose(fptr);
+
+            } else {
+                snprintf(dBuff, sizeof(dBuff), "Error reading from FILE: %s", file);
+                verbose(dBuff, __FILE__, __LINE__, __FUNCTION__, true);
+            }
         }
     }
 
@@ -153,11 +203,11 @@ int main(const int argc, const char *argv[]) {
 
 void dumpFile(char ch, uint64_t pos) {
     if (pos == 0) {
-        printf("0x%016X: ", pos);
+        printf("0x%016lX: ", pos);
     }
     if ((pos % len == 0) && (pos != 0)) {
         printf("\n");
-        printf("0x%016X: ", pos);
+        printf("0x%016lX: ", pos);
     }
     if ((HEXADECIMAL & outputFlag) == HEXADECIMAL) {
         printf("[0x%02X]", (unsigned char)ch);
