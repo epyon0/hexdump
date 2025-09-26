@@ -1,7 +1,7 @@
 # hexdump
 Dump file contents
 ## help
-```bash
+```
 ./hexdump -h
 
 Dump file contents
@@ -22,7 +22,7 @@ cat <FILE> | ./hexdump -i
 <FILE>              Path to file
 ```
 ## Examples:
-```bash
+```
 cat hexdump.c | ./hexdump -i | head
 0x0000000000000000: [0x23]  [0x69]  [0x6E]  [0x63]  [0x6C]  [0x75]  [0x64]  [0x65]
 0x0000000000000008: [0x20]  [0x3C]  [0x73]  [0x74]  [0x64]  [0x69]  [0x6F]  [0x2E]
@@ -35,7 +35,7 @@ cat hexdump.c | ./hexdump -i | head
 0x0000000000000040: [0x6E]  [0x63]  [0x6C]  [0x75]  [0x64]  [0x65]  [0x20]  [0x3C]
 0x0000000000000048: [0x73]  [0x74]  [0x64]  [0x6C]  [0x69]  [0x62]  [0x2E]  [0x68]
 ```
-```bash
+```
 cat hexdump.c | ./hexdump -i -a | head
 0x0000000000000000: [0x23][ # ]  [0x69][ i ]  [0x6E][ n ]  [0x63][ c ]  [0x6C][ l ]  [0x75][ u ]  [0x64][ d ]  [0x65][ e ]
 0x0000000000000008: [0x20][SPC]  [0x3C][ < ]  [0x73][ s ]  [0x74][ t ]  [0x64][ d ]  [0x69][ i ]  [0x6F][ o ]  [0x2E][ . ]
@@ -48,7 +48,7 @@ cat hexdump.c | ./hexdump -i -a | head
 0x0000000000000040: [0x6E][ n ]  [0x63][ c ]  [0x6C][ l ]  [0x75][ u ]  [0x64][ d ]  [0x65][ e ]  [0x20][SPC]  [0x3C][ < ]
 0x0000000000000048: [0x73][ s ]  [0x74][ t ]  [0x64][ d ]  [0x6C][ l ]  [0x69][ i ]  [0x62][ b ]  [0x2E][ . ]  [0x68][ h ]
 ```
-```bash
+```
 cat hexdump.c | ./hexdump -i -x -o -b -l 4 | head
 0x0000000000000000: [0o043][0b00100011]  [0o151][0b01101001]  [0o156][0b01101110]  [0o143][0b01100011]
 0x0000000000000004: [0o154][0b01101100]  [0o165][0b01110101]  [0o144][0b01100100]  [0o145][0b01100101]
