@@ -8,7 +8,6 @@
 #include <io.h>
 #define F_OK 0
 #define access _access
-#define lX llX
 #endif
 
 #define STDIN       0x20
@@ -203,11 +202,11 @@ int main(const int argc, const char *argv[]) {
 
 void dumpFile(char ch, uint64_t pos) {
     if (pos == 0) {
-        printf("0x%016lX: ", pos);
+        printf("0x%08llX: ", (unsigned long long)pos);
     }
     if ((pos % len == 0) && (pos != 0)) {
         printf("\n");
-        printf("0x%016lX: ", pos);
+        printf("0x%08llX: ", (unsigned long long)pos);
     }
     if ((HEXADECIMAL & outputFlag) == HEXADECIMAL) {
         printf("[0x%02X]", (unsigned char)ch);
