@@ -10,16 +10,16 @@ Dump file contents
 OR
 cat <FILE> | ./hexdump -i
 
-[-h || --help]      Print this help message
-[-v || --verbose]   Turn on verbose output
-[-b || --bin]       Toggle binary output, default: false
-[-x || --hex]       Toggle hexadecimal output, default: true
-[-o || --oct]       Toggle octal output, default: false
-[-d || --dec]       Toggle decimal output, default: false
-[-a || --ascii]     Toggle ASCII output, default: false
-[-i || --stdin]     Read file from STDIN instead of parameter
-[-l || --len] <INT> Number of bytes displayed before wrapping to next line, default: 8
-<FILE>              Path to file
+[-h || --help]        Print this help message
+[-v || --verbose]     Turn on verbose output
+[-b || --bin]         Toggle binary output, default: false
+[-x || --hex]         Toggle hexadecimal output, default: true
+[-o || --oct]         Toggle octal output, default: false
+[-d || --dec]         Toggle decimal output, default: false
+[-a || --ascii]       Toggle ASCII output, default: false
+[-i || --stdin]       Read file from STDIN instead of parameter
+[-l || --len] <INT>   Number of bytes displayed before wrapping to next line, default: 8
+[-f || --file] <FILE> Path to file
 ```
 ## Examples:
 ```
@@ -60,4 +60,32 @@ cat hexdump.c | ./hexdump -i -x -o -b -l 4 | head
 0x000000000000001C: [0o040][0b00100000]  [0o074][0b00111100]  [0o163][0b01110011]  [0o164][0b01110100]
 0x0000000000000020: [0o162][0b01110010]  [0o151][0b01101001]  [0o156][0b01101110]  [0o147][0b01100111]
 0x0000000000000024: [0o056][0b00101110]  [0o150][0b01101000]  [0o076][0b00111110]  [0o015][0b00001101]
+```
+```
+./hexdump -f hexdump.c -v -a -x | head -n 20
+15:59:25 | ./hexdump.c:86 | main | DEBUG: Setting ASCII Flag
+15:59:25 | ./hexdump.c:89 | main | DEBUG: ASCII Flag: true
+15:59:25 | ./hexdump.c:79 | main | DEBUG: Setting HEXADECIMAL Flag
+15:59:25 | ./hexdump.c:82 | main | DEBUG: HEXADECIMAL Flag: false
+15:59:25 | ./hexdump.c:175 | main | DEBUG: Reading from FILE: hexdump.c
+0x0000000000000000: [ # ]  [ i ]  [ n ]  [ c ]  [ l ]  [ u ]  [ d ]  [ e ]
+0x0000000000000008: [SPC]  [ < ]  [ s ]  [ t ]  [ d ]  [ i ]  [ o ]  [ . ]
+0x0000000000000010: [ h ]  [ > ]  [ CR]  [ LF]  [ # ]  [ i ]  [ n ]  [ c ]
+0x0000000000000018: [ l ]  [ u ]  [ d ]  [ e ]  [SPC]  [ < ]  [ s ]  [ t ]
+0x0000000000000020: [ r ]  [ i ]  [ n ]  [ g ]  [ . ]  [ h ]  [ > ]  [ CR]
+0x0000000000000028: [ LF]  [ # ]  [ i ]  [ n ]  [ c ]  [ l ]  [ u ]  [ d ]
+0x0000000000000030: [ e ]  [SPC]  [ < ]  [ u ]  [ n ]  [ i ]  [ s ]  [ t ]
+0x0000000000000038: [ d ]  [ . ]  [ h ]  [ > ]  [ CR]  [ LF]  [ # ]  [ i ]
+0x0000000000000040: [ n ]  [ c ]  [ l ]  [ u ]  [ d ]  [ e ]  [SPC]  [ < ]
+0x0000000000000048: [ s ]  [ t ]  [ d ]  [ l ]  [ i ]  [ b ]  [ . ]  [ h ]
+0x0000000000000050: [ > ]  [ CR]  [ LF]  [ # ]  [ i ]  [ n ]  [ c ]  [ l ]
+0x0000000000000058: [ u ]  [ d ]  [ e ]  [SPC]  [ " ]  [ . ]  [ / ]  [ l ]
+0x0000000000000060: [ i ]  [ b ]  [ E ]  [ p ]  [ y ]  [ o ]  [ n ]  [ / ]
+0x0000000000000068: [ m ]  [ i ]  [ s ]  [ c ]  [ . ]  [ h ]  [ " ]  [SPC]
+0x0000000000000070: [ / ]  [ / ]  [SPC]  [ g ]  [ i ]  [ t ]  [SPC]  [ c ]
+0x0000000000000078: [ l ]  [ o ]  [ n ]  [ e ]  [SPC]  [ g ]  [ i ]  [ t ]
+0x0000000000000080: [ @ ]  [ g ]  [ i ]  [ t ]  [ h ]  [ u ]  [ b ]  [ . ]
+0x0000000000000088: [ c ]  [ o ]  [ m ]  [ : ]  [ e ]  [ p ]  [ y ]  [ o ]
+0x0000000000000090: [ n ]  [ 0 ]  [ / ]  [ l ]  [ i ]  [ b ]  [ E ]  [ p ]
+0x0000000000000098: [ y ]  [ o ]  [ n ]  [ . ]  [ g ]  [ i ]  [ t ]  [ CR]
 ```
