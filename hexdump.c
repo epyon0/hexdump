@@ -17,7 +17,6 @@
 #define OCTAL       0x02
 #define BINARY      0x01
 
-bool debug = false;
 char dBuff[1024*2];
 uint8_t outputFlag = HEXADECIMAL;
 char ascii[255][4];
@@ -30,7 +29,7 @@ int main(const int argc, const char *argv[]) {
     if (argc > 1) {
         for (int i = 1; i < argc; i++) {
             if ((strncmp(argv[i], "-v", sizeof("-v")) == 0) || (strncmp(argv[i], "--verbose", sizeof("--verbose")) == 0)) {
-                debug = true;
+                setverbose(true);
                 break;
             }
         }
@@ -54,53 +53,53 @@ int main(const int argc, const char *argv[]) {
             }
 
             if ((strncmp(arg, "-b", sizeof("-b")) == 0) || (strncmp(arg, "--bin", sizeof("--bin")) == 0)) {
-                verbose("Setting BINARY Flag", __FILE__, __LINE__, __FUNCTION__, debug);
+                verbose("Setting BINARY Flag", __FILE__, __LINE__, __FUNCTION__);
                 outputFlag ^= BINARY;
                 snprintf(dBuff, sizeof(dBuff), "BINARY Flag: %s", ((BINARY & outputFlag) == BINARY) ? "true" : "false");
-                verbose(dBuff, __FILE__, __LINE__, __FUNCTION__, debug);
+                verbose(dBuff, __FILE__, __LINE__, __FUNCTION__);
                 continue;
             }
             if ((strncmp(arg, "-o", sizeof("-o")) == 0) || (strncmp(arg, "--oct", sizeof("--oct")) == 0)) {
-                verbose("Setting OCTAL Flag", __FILE__, __LINE__, __FUNCTION__, debug);
+                verbose("Setting OCTAL Flag", __FILE__, __LINE__, __FUNCTION__);
                 outputFlag ^= OCTAL;
                 snprintf(dBuff, sizeof(dBuff), "OCTAL Flag: %s", ((OCTAL & outputFlag) == OCTAL) ? "true" : "false");
-                verbose(dBuff, __FILE__, __LINE__, __FUNCTION__, debug);
+                verbose(dBuff, __FILE__, __LINE__, __FUNCTION__);
                 continue;
             }
             if ((strncmp(arg, "-d", sizeof("-d")) == 0) || (strncmp(arg, "--dec", sizeof("--dec")) == 0)) {
-                verbose("Setting DECIMAL Flag", __FILE__, __LINE__, __FUNCTION__, debug);
+                verbose("Setting DECIMAL Flag", __FILE__, __LINE__, __FUNCTION__);
                 outputFlag ^= DECIMAL;
                 snprintf(dBuff, sizeof(dBuff), "DECIMAL Flag: %s", ((DECIMAL & outputFlag) == DECIMAL) ? "true" : "false");
-                verbose(dBuff, __FILE__, __LINE__, __FUNCTION__, debug);
+                verbose(dBuff, __FILE__, __LINE__, __FUNCTION__);
                 continue;
             }
             if ((strncmp(arg, "-x", sizeof("-x")) == 0) || (strncmp(arg, "--hex", sizeof("--hex")) == 0)) {
-                verbose("Setting HEXADECIMAL Flag", __FILE__, __LINE__, __FUNCTION__, debug);
+                verbose("Setting HEXADECIMAL Flag", __FILE__, __LINE__, __FUNCTION__);
                 outputFlag ^= HEXADECIMAL;
                 snprintf(dBuff, sizeof(dBuff), "HEXADECIMAL Flag: %s", ((HEXADECIMAL & outputFlag) == HEXADECIMAL) ? "true" : "false");
-                verbose(dBuff, __FILE__, __LINE__, __FUNCTION__, debug);
+                verbose(dBuff, __FILE__, __LINE__, __FUNCTION__);
                 continue;
             }
             if ((strncmp(arg, "-a", sizeof("-a")) == 0) || (strncmp(arg, "--ascii", sizeof("--ascii")) == 0)) {
-                verbose("Setting ASCII Flag", __FILE__, __LINE__, __FUNCTION__, debug);
+                verbose("Setting ASCII Flag", __FILE__, __LINE__, __FUNCTION__);
                 outputFlag ^= ASCII;
                 snprintf(dBuff, sizeof(dBuff), "ASCII Flag: %s", ((ASCII & outputFlag) == ASCII) ? "true" : "false");
-                verbose(dBuff, __FILE__, __LINE__, __FUNCTION__, debug);
+                verbose(dBuff, __FILE__, __LINE__, __FUNCTION__);
                 continue;
             }
 
             if ((strncmp(arg, "-i", sizeof("-i")) == 0) || (strncmp(arg, "--stdin", sizeof("--stdin")) == 0)) {
-                verbose("Setting STDIN Flag", __FILE__, __LINE__, __FUNCTION__, debug);
+                verbose("Setting STDIN Flag", __FILE__, __LINE__, __FUNCTION__);
                 outputFlag ^= STDIN;
                 snprintf(dBuff, sizeof(dBuff), "STDIN Flag: %s", ((STDIN & outputFlag) == STDIN) ? "true" : "false");
-                verbose(dBuff, __FILE__, __LINE__, __FUNCTION__, debug);
+                verbose(dBuff, __FILE__, __LINE__, __FUNCTION__);
                 continue;
             }
 
             if (((strncmp(arg, "-l", sizeof("-l")) == 0) || (strncmp(arg, "--len", sizeof("--len")) == 0)) && (i+1 < argc)) {
                 len = atoi(argv[i+1]);
                 snprintf(dBuff, sizeof(dBuff), "Setting LENGTH: %d", len);
-                verbose(dBuff, __FILE__, __LINE__, __FUNCTION__, debug);
+                verbose(dBuff, __FILE__, __LINE__, __FUNCTION__);
                 i++;
                 continue;
             }
@@ -163,7 +162,7 @@ int main(const int argc, const char *argv[]) {
     char ch;
     if ((STDIN & outputFlag) == STDIN) {
         uint64_t count = 0;
-        verbose("Reading from STDIN", __FILE__, __LINE__, __FUNCTION__, debug);
+        verbose("Reading from STDIN", __FILE__, __LINE__, __FUNCTION__);
         while(read(STDIN_FILENO, &ch, 1) > 0) {
             dumpFile(ch, count);
             count++;
@@ -171,7 +170,7 @@ int main(const int argc, const char *argv[]) {
     } else {
         if (file[0] != '\0') {
             snprintf(dBuff, sizeof(dBuff), "Reading from FILE: %s", file);
-            verbose(dBuff, __FILE__, __LINE__, __FUNCTION__, debug);
+            verbose(dBuff, __FILE__, __LINE__, __FUNCTION__);
 
             if (access(file, F_OK) == 0) {
                 FILE *fptr;
@@ -191,7 +190,10 @@ int main(const int argc, const char *argv[]) {
 
             } else {
                 snprintf(dBuff, sizeof(dBuff), "Error reading from FILE: %s", file);
-                verbose(dBuff, __FILE__, __LINE__, __FUNCTION__, true);
+                bool prevVerboseValue = getverbose();
+                setverbose(true);
+                verbose(dBuff, __FILE__, __LINE__, __FUNCTION__);
+                setverbose(prevVerboseValue);
             }
         }
     }
